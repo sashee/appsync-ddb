@@ -33,48 +33,48 @@ resource "aws_dynamodb_table" "group" {
   }
 }
 resource "aws_dynamodb_table" "user" {
-	name         = "user-${random_id.id.hex}"
-	billing_mode = "PAY_PER_REQUEST"
-	hash_key     = "id"
+  name         = "user-${random_id.id.hex}"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
 
-	attribute {
-		name = "id"
-		type = "S"
-	}
+  attribute {
+    name = "id"
+    type = "S"
+  }
 
-	attribute {
-		name = "groupId"
-		type = "S"
-	}
+  attribute {
+    name = "groupId"
+    type = "S"
+  }
 
-	global_secondary_index {
-		name               = "groupId"
-		hash_key           = "groupId"
-		projection_type    = "ALL"
-	}
+  global_secondary_index {
+    name            = "groupId"
+    hash_key        = "groupId"
+    projection_type = "ALL"
+  }
 }
 
 data "aws_iam_policy_document" "appsync" {
   statement {
     actions = [
-			"dynamodb:GetItem",
-			"dynamodb:PutItem",
-			"dynamodb:Query",
-			"dynamodb:UpdateItem",
-			"dynamodb:DeleteItem",
-			"dynamodb:ConditionCheckItem",
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:Query",
+      "dynamodb:UpdateItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:ConditionCheckItem",
     ]
     resources = [
-			aws_dynamodb_table.group.arn,
-			aws_dynamodb_table.user.arn,
+      aws_dynamodb_table.group.arn,
+      aws_dynamodb_table.user.arn,
     ]
   }
   statement {
     actions = [
-			"dynamodb:Query",
+      "dynamodb:Query",
     ]
     resources = [
-			"${aws_dynamodb_table.user.arn}/index/groupId",
+      "${aws_dynamodb_table.user.arn}/index/groupId",
     ]
   }
 }
@@ -112,11 +112,11 @@ resource "aws_appsync_datasource" "ddb_users" {
 
 # resolvers
 resource "aws_appsync_resolver" "Query_groupById" {
-  api_id      = aws_appsync_graphql_api.appsync.id
-  type        = "Query"
-  field       = "groupById"
-  data_source = aws_appsync_datasource.ddb_groups.name
-  request_template = <<EOF
+  api_id            = aws_appsync_graphql_api.appsync.id
+  type              = "Query"
+  field             = "groupById"
+  data_source       = aws_appsync_datasource.ddb_groups.name
+  request_template  = <<EOF
 {
 	"version" : "2018-05-29",
 	"operation" : "GetItem",
@@ -126,7 +126,7 @@ resource "aws_appsync_resolver" "Query_groupById" {
 	"consistentRead" : true
 }
 EOF
-	response_template = <<EOF
+  response_template = <<EOF
 #if($ctx.error)
 	$util.error($ctx.error.message, $ctx.error.type)
 #end
@@ -135,11 +135,11 @@ EOF
 }
 
 resource "aws_appsync_resolver" "Mutation_addGroup" {
-  api_id      = aws_appsync_graphql_api.appsync.id
-  type        = "Mutation"
-  field       = "addGroup"
-  data_source = aws_appsync_datasource.ddb_groups.name
-  request_template = <<EOF
+  api_id            = aws_appsync_graphql_api.appsync.id
+  type              = "Mutation"
+  field             = "addGroup"
+  data_source       = aws_appsync_datasource.ddb_groups.name
+  request_template  = <<EOF
 {
 	"version" : "2018-05-29",
 	"operation" : "PutItem",
@@ -151,7 +151,7 @@ resource "aws_appsync_resolver" "Mutation_addGroup" {
 	}
 }
 EOF
-	response_template = <<EOF
+  response_template = <<EOF
 #if($ctx.error)
 	$util.error($ctx.error.message, $ctx.error.type)
 #end
@@ -160,11 +160,11 @@ EOF
 }
 
 resource "aws_appsync_resolver" "Mutation_addUser" {
-  api_id      = aws_appsync_graphql_api.appsync.id
-  type        = "Mutation"
-  field       = "addUser"
-  data_source = aws_appsync_datasource.ddb_users.name
-  request_template = <<EOF
+  api_id            = aws_appsync_graphql_api.appsync.id
+  type              = "Mutation"
+  field             = "addUser"
+  data_source       = aws_appsync_datasource.ddb_users.name
+  request_template  = <<EOF
 {
 	"version": "2018-05-29",
 	"operation": "TransactWriteItems",
@@ -196,7 +196,7 @@ resource "aws_appsync_resolver" "Mutation_addUser" {
 	]
 }
 EOF
-	response_template = <<EOF
+  response_template = <<EOF
 #if($ctx.error)
 	$util.error($ctx.error.message, $ctx.error.type)
 #end
@@ -205,11 +205,11 @@ EOF
 }
 
 resource "aws_appsync_resolver" "Group_users" {
-  api_id      = aws_appsync_graphql_api.appsync.id
-  type        = "Group"
-  field       = "users"
-  data_source = aws_appsync_datasource.ddb_users.name
-  request_template = <<EOF
+  api_id            = aws_appsync_graphql_api.appsync.id
+  type              = "Group"
+  field             = "users"
+  data_source       = aws_appsync_datasource.ddb_users.name
+  request_template  = <<EOF
 {
 	"version" : "2018-05-29",
 	"operation" : "Query",
@@ -231,7 +231,7 @@ resource "aws_appsync_resolver" "Group_users" {
 	#end
 }
 EOF
-	response_template = <<EOF
+  response_template = <<EOF
 #if($ctx.error)
 	$util.error($ctx.error.message, $ctx.error.type)
 #end
