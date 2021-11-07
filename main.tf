@@ -54,6 +54,46 @@ resource "aws_dynamodb_table" "user" {
   }
 }
 
+# sample data
+
+resource "aws_dynamodb_table_item" "group1" {
+  table_name = aws_dynamodb_table.group.name
+  hash_key   = aws_dynamodb_table.group.hash_key
+
+  item = <<ITEM
+{
+  "id": {"S": "group1"},
+	"name": {"S": "Group 1"}
+}
+ITEM
+}
+
+resource "aws_dynamodb_table_item" "user1" {
+  table_name = aws_dynamodb_table.user.name
+  hash_key   = aws_dynamodb_table.user.hash_key
+
+  item = <<ITEM
+{
+  "id": {"S": "user1"},
+	"name": {"S": "User 1"},
+	"groupId": {"S": "group1"}
+}
+ITEM
+}
+
+resource "aws_dynamodb_table_item" "user2" {
+  table_name = aws_dynamodb_table.user.name
+  hash_key   = aws_dynamodb_table.user.hash_key
+
+  item = <<ITEM
+{
+  "id": {"S": "user2"},
+	"name": {"S": "User 2"},
+	"groupId": {"S": "group1"}
+}
+ITEM
+}
+
 data "aws_iam_policy_document" "appsync" {
   statement {
     actions = [
