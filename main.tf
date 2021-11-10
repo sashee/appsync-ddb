@@ -263,10 +263,10 @@ resource "aws_appsync_resolver" "Group_users" {
 			":groupId" : {"S": $util.toJson($ctx.source.id)}
 		}
 	}
-	#if($context.arguments.count)
+	#if($ctx.args.count)
 		,"limit": $util.toJson($ctx.args.count)
 	#end
-	#if($context.arguments.nextToken)
+	#if($ctx.args.nextToken)
 		,"nextToken": $util.toJson($ctx.args.nextToken)
 	#end
 }
